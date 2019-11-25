@@ -1,7 +1,6 @@
 var token = localStorage.getItem('token');
 if (token) {
   token = token.replace(/^"(.*)"$/, '$1'); // Remove quotes from token start/end.
-  console.log(token)
 }
 
 
@@ -18,7 +17,6 @@ function loadTodos() {
     method: 'GET',
     dataType: 'json',
     success: function (data) {
-      console.log(data)
 
       for (let i = 0; i < data.length; i++) {
         // aqui va su código para agregar los elementos de la lista
@@ -94,4 +92,31 @@ function addTodo(id, todoText, completed) {
 
   todoList.appendChild(listElement)
 
+}
+
+
+logoutBtn = document.getElementById('logout');
+
+logout.onclick = function () {
+  $.ajax({
+    url: 'https://final-back.herokuapp.com/logout',
+    // url: 'https://tuapp.herokuapp.com/todos',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    method: 'POST',
+    dataType: 'json',
+    success: function (data) {
+      // agregar código aqui para poner los datos del todolist en el el html
+      addTodo(data._id, data.description, data.completed)
+
+    },
+    error: function (error_msg) {
+      alert((error_msg['responseText']));
+    }
+  });
+
+  localStorage.removeItem('token');
+  window.location = './index.html'
 }
