@@ -1,6 +1,7 @@
 var token = localStorage.getItem('token');
 if (token) {
   token = token.replace(/^"(.*)"$/, '$1'); // Remove quotes from token start/end.
+  console.log(token)
 }
 
 
@@ -8,26 +9,25 @@ var todos = document.querySelectorAll("input[type=checkbox]");
 
 function loadTodos() {
   $.ajax({
-    url: 'http://localhost:3000/todos',
+    url: 'https://final-back.herokuapp.com/todos',
     // url: 'https://tuapp.herokuapp.com/todos',
     headers: {
-        'Content-Type':'application/json',
-        'Authorization': 'Bearer ' + token
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
     },
     method: 'GET',
     dataType: 'json',
-    success: function(data){
+    success: function (data) {
       console.log(data)
 
-      for( let i = 0; i < data.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         // aqui va su código para agregar los elementos de la lista
-        console.log(data[i].description)
         // algo asi:
-        // addTodo(data[i]._id, data[i].description, data[i].completed)
+        addTodo(data[i]._id, data[i].description, data[i].completed)
         // no tienen que usar la funcion de addTodo, es un ejemplo
       }
     },
-    error: function(error_msg) {
+    error: function (error_msg) {
       alert((error_msg['responseText']));
     }
   });
@@ -49,25 +49,25 @@ var input = document.querySelector("input[name=newitem]");
 input.addEventListener('keypress', function (event) {
   if (event.charCode === 13) {
     json_to_send = {
-      "description" : input.value
+      "description": input.value
     };
     json_to_send = JSON.stringify(json_to_send);
     $.ajax({
-      url: 'http://localhost:3000/todos',
+      url: 'https://final-back.herokuapp.com/todos',
       // url: 'https://tuapp.herokuapp.com/todos',
       headers: {
-          'Content-Type':'application/json',
-          'Authorization': 'Bearer ' + token
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
       },
       method: 'POST',
       dataType: 'json',
       data: json_to_send,
-      success: function(data){
-        console.log(data)
+      success: function (data) {
         // agregar código aqui para poner los datos del todolist en el el html
-        
+        addTodo(data._id, data.description, data.completed)
+
       },
-      error: function(error_msg) {
+      error: function (error_msg) {
         alert((error_msg['responseText']));
       }
     });
@@ -77,5 +77,21 @@ input.addEventListener('keypress', function (event) {
 
 
 function addTodo(id, todoText, completed) {
-  
+  todoList = document.getElementById('todo-list');
+
+  listElement = document.createElement('li');
+
+  list_input = document.createElement('input');
+
+  list_input.type = "checkbox";
+  list_input.name = "todo";
+
+  description = document.createElement('span');
+  description.innerHTML = todoText;
+
+  listElement.appendChild(list_input);
+  listElement.appendChild(description);
+
+  todoList.appendChild(listElement)
+
 }
